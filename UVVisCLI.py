@@ -1,17 +1,29 @@
+""" Welcome to the UV-Vis CLI plotter. This CLI will intake any number of files and produce
+individual plots, as well as a combined plot of all input files.
+
+This code can be assumed to be under the MIT license until further clarification is provided. 
+If you use this program to produce any plots for publication, it would be appreciated to 
+cite the GitHub repository (https://github.com/BardenB/uv-vis-plot) as well as Matplotlib 
+and pandas (see readme for their links to citations). While I cannot force you to cite this
+repository and still fall under MIT, matplotlib and pandas do require citations for use (I
+think, it's at least highly encouraged).
+
+There will be updates as needed as issues arise. 
+
+copyright 2023 Brett Barden
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (StrMethodFormatter,AutoLocator)
 import argparse
 
-
-""" CLI implementation section.
-Putting everything in one file to make it super easy for everyone involved.
-"""
+# CLI implementation section.
 parser = argparse.ArgumentParser(
     description="Plot UV-Vis spectra from raw data from OceanView.",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     prog = 'UVVis',
-    epilog = 'Thank you for using %(prog)s. Please contact with any questions.',
+    epilog = 'Thank you for using %(prog)s. Please contact Brett with any questions.',
     allow_abbrev= False
 )
 
@@ -24,7 +36,8 @@ parser.add_argument(
 
 parser.add_argument(
     '-f' ,
-    '--file',
+    '--files',
+    nargs = '+',
     default = 'UVTestdata.txt',
     type = str,
     help = 'Choose file to plot.',
@@ -87,65 +100,87 @@ parser.add_argument(
 
 parser.add_argument(
      '-r', #letter chosen by the one and only Leah.
-     '--color',
-     default = 'Red',
-     help = 'choose your color',
+     '--colors',
+     default = ['Red','Blue','Green','Purple','Yellow','Pink','Brown', 'Orange'],
+     nargs = '+',
+     help = 'choose your colors.',
      required = False
 )
+
+parser.add_argument(
+    '-p',
+    '--plot-true',
+    action = 'store_true',
+    help='Combine all input files into one plot.',
+    required=False,
+)
+
 args = parser.parse_args()
 
 
-"""Beginning code to plot the spectrum provided.
-"""
+# Updating fonts in all aspects of the plot.
 
 plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Arial'
 plt.rcParams['font.family'] ='Arial'
 
-"""Input file to be processed, this will convert txt file to csv and remove the first, unecessary line.
-The way the files are stored as txt when you copy and paste the values from the UV-Vis, there is an
-extra empty column at the end that needs to be removed. This takes care of that."""
+colorList = ['Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray']
 
-txtFile = args.file
-csvFile = txtFile[:-4]+'.csv'
-plotName = txtFile[:-4]+'Plot.png'
+# Starting the processing of data.
+for index, txtFile in enumerate(args.files):
+    csvFile = txtFile[:-4] + '.csv'
+    plotName = txtFile[:-4] + 'Plot.png'
 
+# Copying values from OceanView results in an extra column, it is removed here.
+    df = pd.read_csv(txtFile, delimiter='\t', skiprows=1)
+    df.drop(columns=['Unnamed: 2'], inplace=True)
+    df.columns = ['wavelength', 'absorbance']
 
-def txt2csv(txtFile, csvFile):
-    with open(txtFile, 'r')as fileone:
-        with open(csvFile, 'w') as filetwo:
-                material = fileone.readlines()[1:]
-                filetwo.writelines(material)
-                return csvFile
+# Calculations of Molar Absorptivity automatically, no need to do it in excel.
+    df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(args.concentration*args.path_length))
 
-df = pd.read_csv(txt2csv(txtFile,csvFile), delimiter = '\t')
-df.drop(columns=['Unnamed: 2'], inplace=True)
-df.columns = ['wavelength', 'absorbance']
+# This section will automatically plot each individual file as its own plot.
+# Note that there is no title, that can be added if you want but is most likely 
+# to be added in as a section header in the SI or figure caption in a paper.
+    plt.figure()
+    plt.scatter(df['wavelength'], df['MolarAbsorptivity'], color='Red', s=2)
+    plt.plot(df['wavelength'], df['MolarAbsorptivity'], '-', color='Red', linewidth=3)
+    plt.xlim(args.xmin, args.xmax)
+    plt.ylim(args.ymin, args.ymax)
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(AutoLocator())
+    ax.yaxis.set_major_locator(AutoLocator())
+    plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
+    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)')
+    ax.xaxis.set_label_text(r'Wavelength(nm)')
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_visible(False)
+    plt.savefig(plotName, format='png', dpi=300, bbox_inches='tight')
+    plt.close()
 
-""" Calculate molar absorptivity as a function of absorbance divided by concentration.
-This assume
-"""
+# This section plots all input files together overlayed on top of each other.
+# Current limitations: Each must have the same concentration. It cannot handle multiple
+# concentrations right now. Which is rather unfortunate.
+if args.plot_true:
+    plt.figure()
+    for index, (txtFile, color) in enumerate(zip(args.files, args.colors or colorList)):
+        df = pd.read_csv(txtFile, delimiter='\t', skiprows=1)
+        df.drop(columns=['Unnamed: 2'], inplace=True)
+        df.columns = ['wavelength', 'absorbance']
 
-df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(args.concentration*args.path_length))
-
-"""Plotting wavelength as the x axis and molar absorptivity on the y axis.
-Using molar absorptivity is more appropriate in most cases to compare across different 
-concentrations and complexes.
-Currently hard coded x axis is 300-1000 nm and y axis -100 to 4000. These can be changed.
-Hopefully I can make this programmable as well."""
-
-plot = plt.scatter(df['wavelength'], df['MolarAbsorptivity'], color = args.color, s = 2)
-plt.plot(df['wavelength'], df['MolarAbsorptivity'], '-', color = args.color, linewidth = 3)
-plt.xlim(args.xmin,args.xmax)
-plt.ylim(args.ymin,args.ymax)
-
-ax = plot.axes
-ax.xaxis.set_major_locator(AutoLocator())
-ax.yaxis.set_major_locator(AutoLocator())
-plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)')
-ax.xaxis.set_label_text(r'Wavelength(nm)')
-for axis in ['top','right']:
-    ax.spines[axis].set_visible(False)
-
-plt.savefig(plotName, format = 'png', dpi = 300, bbox_inches='tight')
+        df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(args.concentration*args.path_length))
+        plt.scatter(df['wavelength'], df['MolarAbsorptivity'], color=color, s=2)
+        plt.plot(df['wavelength'], df['MolarAbsorptivity'], '-', color=color, linewidth=3)
+    plt.xlim(args.xmin, args.xmax)
+    plt.ylim(args.ymin, args.ymax)
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(AutoLocator())
+    ax.yaxis.set_major_locator(AutoLocator())
+    plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
+    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)')
+    ax.xaxis.set_label_text(r'Wavelength(nm)')
+    for axis in ['top', 'right']:
+        ax.spines[axis].set_visible(False)
+# The savefig section here will currently output the combined plot to the current directory, that can be updated to change.
+    plt.savefig("CombinedPlot.png", format='png', dpi=300, bbox_inches='tight')
+    plt.close()
