@@ -84,6 +84,7 @@ parser.add_argument(
     '-c',
     '--concentration',
     default = 0.0001,
+    nargs = '+',
     type = float,
     help = 'concentration in units of molar',
     required = False
@@ -115,8 +116,17 @@ parser.add_argument(
     required=False,
 )
 
-args = parser.parse_args()
+parser.add_argument(
+    '-o',
+    '--overlay',
+    default = "OverlayPlot.png",
+    help = 'Specify the file name for the overlay plot.',
+    required = False,
+)
 
+args = parser.parse_args()
+if args.overlay and not args.plot_true:
+    parser.error("-o/--overlay can only be used with -p/--plot-true.")
 
 # Updating fonts in all aspects of the plot.
 
@@ -124,10 +134,14 @@ plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Arial'
 plt.rcParams['font.family'] ='Arial'
 
-colorList = ['Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray']
+colorList = ['Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Yellow']
 
 # Starting the processing of data.
 for index, txtFile in enumerate(args.files):
+    if args.concentration and index < len(args.concentration):
+        concentration = args.concentration[index]
+    else:
+        concentration = args.concentration
     csvFile = txtFile[:-4] + '.csv'
     plotName = txtFile[:-4] + 'Plot.png'
 
@@ -137,7 +151,7 @@ for index, txtFile in enumerate(args.files):
     df.columns = ['wavelength', 'absorbance']
 
 # Calculations of Molar Absorptivity automatically, no need to do it in excel.
-    df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(args.concentration*args.path_length))
+    df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(concentration*args.path_length))
 
 # This section will automatically plot each individual file as its own plot.
 # Note that there is no title, that can be added if you want but is most likely 
@@ -164,11 +178,15 @@ for index, txtFile in enumerate(args.files):
 if args.plot_true:
     plt.figure()
     for index, (txtFile, color) in enumerate(zip(args.files, args.colors or colorList)):
+        if args.concentration and index < len(args.concentration):
+            concentration = args.concentration[index]
+        else:
+            concentration = args.concentration
         df = pd.read_csv(txtFile, delimiter='\t', skiprows=1)
         df.drop(columns=['Unnamed: 2'], inplace=True)
         df.columns = ['wavelength', 'absorbance']
 
-        df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(args.concentration*args.path_length))
+        df['MolarAbsorptivity'] = df['absorbance'].apply(lambda x: x/(concentration*args.path_length))
         plt.scatter(df['wavelength'], df['MolarAbsorptivity'], color=color, s=2)
         plt.plot(df['wavelength'], df['MolarAbsorptivity'], '-', color=color, linewidth=3)
     plt.xlim(args.xmin, args.xmax)
@@ -181,6 +199,7 @@ if args.plot_true:
     ax.xaxis.set_label_text(r'Wavelength(nm)')
     for axis in ['top', 'right']:
         ax.spines[axis].set_visible(False)
-# The savefig section here will currently output the combined plot to the current directory, that can be updated to change.
-    plt.savefig("CombinedPlot.png", format='png', dpi=300, bbox_inches='tight')
+# The savefig section here will currently output the overlay plot to the current directory,
+# but that can be changed based on the --overlay flag..
+    plt.savefig(args.overlay, format='png', dpi=300, bbox_inches='tight')
     plt.close()
