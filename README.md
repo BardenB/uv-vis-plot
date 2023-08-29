@@ -36,7 +36,7 @@ Once the virtual environment is active and packages installed, it is now possibl
 3. If you hit enter after typing step 2, a plot will be generated and placed in the same directory as the input file. The name is the same as the input file but with the word Plot added to the end. There is no automatic preview. Simply open the png and see the results.
     - *Note*: if you have multiple input files and elect for a combined plot (see below), the output of the combined plot is currently set to be the current directory with a generic name. This will need to be updated in post-processing.
 4. If you need to change any settings, such as the y-axis, you will need to add in the flags as outlined below. For example, to change the y-axis maximum from 20000 to 5000, simply type `python UVVisCLI.py -f \path\to\file -u 5000` or `python UVVisCLI.py -f \path\to\file --ymax 4000`. 
-5. Be aware that each time you run the same input file, it will automatically overwrite the output png to the most recent one. If you do not want that to happen, change the name of the previous run first. *I will work on updating such that subsequent runs do not overwrite, but that's not high on the priority list for now.*
+5. Be aware that each time you run the same input file, it will automatically overwrite the output png to the most recent one. If you do not want that to happen, change the name of the previous run first. *future update, but not high priority*
 6. Once the plot is to your liking, you can simply use the png however you want. Post-processing can be done like normal.
     - I currently have dpi set to 300, which is plenty for most purposes. You can change it if you want.
 7. Happy plotting!
@@ -44,7 +44,7 @@ Once the virtual environment is active and packages installed, it is now possibl
 ## Arguments
 
 - `-f` or `--files` <span style = "color :red"> **Required**</span>
-    - you must include the file name here. If it is not located in the same directory as `UVVisCLI.py`, you must put the full path. On Windows, right click on the file you want to process and click `Copy as path` or `Ctrl + shift + c`. You can leave the quotes when pasted. This argument can take one or more files to process.
+    - you must include the file name here. If it is not located in the same directory as `UVVisCLI.py`, you must put the full path. On Windows, right click on the file you want to process and click `Copy as path` or `Ctrl + shift + c`. You can leave the quotes when pasted. This argument can take one or more files to process. Separate files by a space only.
 - `-x` or `--xmin`
     - x-axis minimum. Default value is 300. Do not include units.
 - `-z` or `--xmax`
@@ -54,17 +54,21 @@ Once the virtual environment is active and packages installed, it is now possibl
 - `-u` or `--ymax`
     - y axis maximum. Default value is 20000. 
 - `-c` or `--concentration`
-    - The concentration of the solution in units of molar. Default value is 0.0001 M (0.1 mM).
+    - The concentration of the solution in units of molar. Default value is 0.0001 M (0.1 mM). If you are specifying concentration for each file, make sure to enter the concentrations in the order of the files, otherwise it will not work. Separate concentrations by space only, no commas, tabs etc.
 - `-b` or `--path-length`
     - The path length when used in Beer's Law calculations of the molar absorptivity. Default value is 1 cm. Do not include units.
 - `-r` or `--colors`
-    - The color of the plotted data. This does not change axes, only data.
+    - The color of the plotted data. This does not change axes, only data. Separate colors by a space only.
+    - example: `-r red orange yellow green`
+    - Each individual plot will be plotted as red, which is hard coded. That can be changed if you dig through the code.
 - `-p` or `--plot-true`
     - will plot a combined plot of all input files. Only need to input the flag, no options available.
+- `-o` or `--overlay`
+    - Specify the file name for the overlay plot. Can only be used if `-p` is also used.
 
 #### Citations
 
-- If you use this program to produce plots, it would be greatly appreciated to cite by including the github repository as a citation (https://github.com/BardenB/uv-vis-plot). Nothing else asked of me (to stay compliant with MIT I think). 
+- If you use this program to produce plots, it would be greatly appreciated to cite by including the github repository as a citation (https://github.com/BardenB/uv-vis-plot). Nothing else asked from me (to stay compliant with MIT I think). 
 - Matplotlib requires citing, which can be found [here](https://matplotlib.org/stable/users/project/citing.html).
 - pandas requires citing, which can be found [here](https://pandas.pydata.org/about/citing.html).
 
@@ -73,5 +77,5 @@ Once the virtual environment is active and packages installed, it is now possibl
 Assume MIT license for now, clarification and changes may come in the future if necessary. 
 
 ##### Known limitations
-- If two plots have different concentrations, they cannot be plotted together, or even on the same line. The program will have to be run twice and the `-c` flag used appropriately.
-- If you have to overlay more than 8 spectra, the default colors will repeat themselves. Automatic updating to the xkcd color scheme for time point studies, etc., will be updated if needed. Fading colors is also not currently an option.
+- If you have to overlay more than 8 spectra, the default colors ('Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Yellow') will repeat themselves. Automatic updating to an automatic gradient or shading or rainbow for time point studies, etc., will be updated if needed. Changing opacity is currently not supported either, and probably will not be unless absolutely necessary.
+- Running the same input file will automatically overwrite any plots and data output files that may generate. I will work on a way to update that such that a number or something is added to the end of the file to prevent overwriting. This is not high priority. Just rename if you need to run multiple times.
