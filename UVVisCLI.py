@@ -125,8 +125,6 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-if args.overlay and not args.plot_true:
-    parser.error("-o/--overlay can only be used with -p/--plot-true.")
 
 # Updating fonts in all aspects of the plot.
 
@@ -138,7 +136,7 @@ colorList = ['Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Yello
 
 # Starting the processing of data.
 for index, txtFile in enumerate(args.files):
-    if args.concentration and index < len(args.concentration):
+    if args.concentration != 0.0001:
         concentration = args.concentration[index]
     else:
         concentration = args.concentration
@@ -178,7 +176,7 @@ for index, txtFile in enumerate(args.files):
 if args.plot_true:
     plt.figure()
     for index, (txtFile, color) in enumerate(zip(args.files, args.colors or colorList)):
-        if args.concentration and index < len(args.concentration):
+        if args.concentration != 0.0001:
             concentration = args.concentration[index]
         else:
             concentration = args.concentration
