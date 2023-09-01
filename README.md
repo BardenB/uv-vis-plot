@@ -2,6 +2,15 @@
 
 Process all UV-Vis data spectra at once, in publishable quality.
 
+1. [How to download everything.](#how-to-download-everything-personal-preference-on-virtual-env-setup)
+2. [Setting up Python, Mamba, and virtual environments](#setting-up-python-mamba-and-virtual-environments)
+3. [Downloading the UV Vis CLI program](#downloading-the-uv-vis-cli-program)
+4. [Running the UV-Vis plotter](#running-the-uv-vis-plotter)
+5. [Arguments](#arguments)
+6. [Citations](#citations)
+7. [Known Limitations](#known-limitations)
+
+
 ## How to download everything (personal preference on virtual env setup)
 
 *Note*: If you are familiar with python virtual environments, you can ignore the first section on setting up virtual environments, save **step 6** for package dependencies. Personally, I prefer to use Mamba for my virtual environments, which is a conda wrapper (and what I will write about below). If you are unfamiliar with virtual environments, just know that this will help keep dependencies separate and prevent possible problems in the future.
@@ -29,17 +38,18 @@ Process all UV-Vis data spectra at once, in publishable quality.
 
 Once the virtual environment is active and packages installed, it is now possible to run the UV-Vis plotting program in order to get your spectra.
 
-1. If you are familiar with CLI programs, you can find the arguments below. Happy plotting!
-2. To run a basic plot with all default settings, type `python UVVisCLI.py -f \path\to\file` where `\path\to\file` is replaced with the actual path to the txt file you want to use. See the `-f` argument below on how to write that out.
+1. To start, you must make sure your command prompt (whichever you use), is in the directory of the program.  To do that, open the folder you unzipped (in this case, the folder will be named `uv-vis--plot`), and copy the file path. in the command prompt, type `cd` followed by a space followed by pasting the file path. You will most likely have to hit `ctrl + shift + V` rather than a typical paste. Now your command line will be in the correct folder. Depending on where you put it, you might not need the whole file path, but if you're not familiar with command line commands, just do the full path.
+2. If you are familiar with CLI programs, you can find the arguments below. Happy plotting!
+3. To run a basic plot with all default settings, type `python UVVisCLI.py -f \path\to\file` where `\path\to\file` is replaced with the actual path to the txt file you want to use. See the `-f` argument below on how to write that out.
     - *Note*: If you move all of your txt files into the same directory as this program, you do not need the full path. You only need the file name. For example, `python UVVisCLI.py -f uvdata.txt` if and only if `uvdata.txt` is in the same folder as `UVVisCLI.py`.
     - **Remember that no directory or file can contain a space if you do a full path to the file.**
-3. If you hit enter after typing step 2, a plot will be generated and placed in the same directory as the input file. The name is the same as the input file but with the word Plot added to the end. There is no automatic preview. Simply open the png and see the results.
+4. If you hit enter after typing step 3, a plot will be generated and placed in the same directory as the input file. The name is the same as the input file but with the word Plot added to the end. There is no automatic preview. Simply open the png and see the results.
     - *Note*: if you have multiple input files and elect for a combined plot (see below), the output of the combined plot is currently set to be the current directory with a generic name. This will need to be updated in post-processing.
-4. If you need to change any settings, such as the y-axis, you will need to add in the flags as outlined below. For example, to change the y-axis maximum from 20000 to 5000, simply type `python UVVisCLI.py -f \path\to\file -u 5000` or `python UVVisCLI.py -f \path\to\file --ymax 4000`. 
-5. Be aware that each time you run the same input file, it will automatically overwrite the output png to the most recent one. If you do not want that to happen, change the name of the previous run first. *future update, but not high priority*
-6. Once the plot is to your liking, you can simply use the png however you want. Post-processing can be done like normal.
+5. If you need to change any settings, such as the y-axis, you will need to add in the flags as outlined below. For example, to change the y-axis maximum from 20000 to 5000, simply type `python UVVisCLI.py -f \path\to\file -u 5000` or `python UVVisCLI.py -f \path\to\file --ymax 4000`. 
+6. Be aware that each time you run the same input file, it will automatically overwrite the output png to the most recent one. If you do not want that to happen, change the name of the previous run first. *future update, but not high priority*
+7. Once the plot is to your liking, you can simply use the png however you want. Post-processing can be done like normal.
     - I currently have dpi set to 300, which is plenty for most purposes. You can change it if you want.
-7. Happy plotting!
+8. Happy plotting!
 
 ## Arguments
 
@@ -76,6 +86,6 @@ Once the virtual environment is active and packages installed, it is now possibl
 
 Assume MIT license for now, clarification and changes may come in the future if necessary. 
 
-##### Known limitations
+#### Known Limitations
 - If you have to overlay more than 8 spectra, the default colors ('Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Yellow') will repeat themselves. Automatic updating to an automatic gradient or shading or rainbow for time point studies, etc., will be updated if needed. Changing opacity is currently not supported either, and probably will not be unless absolutely necessary.
 - Running the same input file will automatically overwrite any plots and data output files that may generate. I will work on a way to update that such that a number or something is added to the end of the file to prevent overwriting. This is not high priority. Just rename if you need to run multiple times.
