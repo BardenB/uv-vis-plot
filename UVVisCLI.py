@@ -167,6 +167,7 @@ for index, txtFile in enumerate(args.files):
     ax.xaxis.set_label_text(r'Wavelength(nm)')
     for axis in ['top', 'right']:
         ax.spines[axis].set_visible(False)
+    #plt.show()
     plt.savefig(plotName, format='png', dpi=300, bbox_inches='tight')
     plt.close()
 
