@@ -195,7 +195,7 @@ if args.plot_true:
     ax.yaxis.set_major_locator(AutoLocator())
     plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
     ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)', size = 12, weight = 'bold')
-    ax.xaxis.set_label_text(r'Wavelength(nm)', size = 12, weight = 'bold')
+    ax.xaxis.set_label_text(r'Wavelength (nm)', size = 12, weight = 'bold')
     for axis in ['top', 'right']:
         ax.spines[axis].set_visible(False)
 # The savefig section here will currently output the overlay plot to the current directory,
