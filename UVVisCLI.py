@@ -31,7 +31,7 @@ parser.add_argument(
     '-v',
     '--version',
     action = 'version',
-    version = '%(prog)s 0.1.0',
+    version = '%(prog)s 0.3.0',
 )
 
 parser.add_argument(
@@ -131,6 +131,7 @@ args = parser.parse_args()
 plt.rcParams['mathtext.fontset'] = 'custom'
 plt.rcParams['mathtext.rm'] = 'Arial'
 plt.rcParams['font.family'] ='Arial'
+plt.rcParams['font.weight'] = 'bold'
 
 colorList = ['Red', 'Blue', 'Green', 'Purple', 'Orange', 'Pink', 'Brown', 'Yellow']
 
@@ -163,11 +164,10 @@ for index, txtFile in enumerate(args.files):
     ax.xaxis.set_major_locator(AutoLocator())
     ax.yaxis.set_major_locator(AutoLocator())
     plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)')
-    ax.xaxis.set_label_text(r'Wavelength(nm)')
+    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)', size = 12, weight = 'bold')
+    ax.xaxis.set_label_text(r'Wavelength(nm)', size = 12, weight = 'bold')
     for axis in ['top', 'right']:
         ax.spines[axis].set_visible(False)
-    #plt.show()
     plt.savefig(plotName, format='png', dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -194,8 +194,8 @@ if args.plot_true:
     ax.xaxis.set_major_locator(AutoLocator())
     ax.yaxis.set_major_locator(AutoLocator())
     plt.gca().xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)')
-    ax.xaxis.set_label_text(r'Wavelength(nm)')
+    ax.yaxis.set_label_text(r'Molar Absorptivity ($\mathrm{{cm^{-1} M^{-1}}}$)', size = 12, weight = 'bold')
+    ax.xaxis.set_label_text(r'Wavelength(nm)', size = 12, weight = 'bold')
     for axis in ['top', 'right']:
         ax.spines[axis].set_visible(False)
 # The savefig section here will currently output the overlay plot to the current directory,
