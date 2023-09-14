@@ -18,7 +18,7 @@ Process all UV-Vis data spectra at once, in publishable quality.
 ### Setting up Python, Mamba, and virtual environments
 
 1. Download [python](https://www.python.org/downloads/) for your appropriate OS. Default settings should be fine.
-2. Download [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge) for your appropriate OS. Follow any instructions. Default settings should be fine. From this point forward, I use the miniforge prompt that comes with the install but you can use any command prompt.
+2. Download [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge) for your appropriate OS. Follow any instructions. Default settings should be fine. You should use the miniforge prompt that comes with this install, search for Miniforge Prompt in your start menu.
 3. If you ever get lost in setting up Mambaforge, check out their [documentation](https://mamba.readthedocs.io/en/latest/index.html), or reach out to me.
 4. It is time to create our virtual environment that will be used for this program. You can use `mamba create -n plotenv` which will create a virtual environment called `plotenv`. You can name it whatever you want. I suggest keeping environment names easy.
     - If you forget the name of the environments you have, type `mamba env list` and this list will show you what virtual environments are managed by Mamba/conda.
